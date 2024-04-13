@@ -12,6 +12,7 @@ import * as fs from "fs";
 import mime from "mime";
 import md5 from "md5";
 import path from "path";
+import StreamMD5 from "stream-md5";
 let config: R2Config = {
     accountId: getInput("r2-account-id", { required: true }),
     accessKeyId: getInput("r2-access-key-id", { required: true }),
@@ -81,7 +82,7 @@ const run = async (config: R2Config) => {
         
         const cmd = new PutObjectCommand(uploadParams);
 
-        const digest = md5(fileStream);
+        const digest = StreamMD5.hash(fileStream);
 
         cmd.middlewareStack.add((next: any) => async (args: any) => {
             args.request.headers['if-none-match'] = `"${digest}"`;
